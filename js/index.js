@@ -1,6 +1,7 @@
 $( document ).ready(function() {
 
     let selectedPhotoIndex = 0;
+    let score = 0;
 
     $('#photo').attr('src', photos[selectedPhotoIndex].imgRef);
     $('#photoTitle').text(photos[selectedPhotoIndex].name);
@@ -13,8 +14,11 @@ $( document ).ready(function() {
     })
 
     $("#confirm").click(function(){
+        //todo Join in the same function due to syc issues.
         showMonumentLocation(selectedPhotoIndex);
         generateScoringZone(selectedPhotoIndex);
+        console.log(markersArray.length);
+        score += calculateScore(markersArray[0], markersArray[1]);
         $('#confirm').prop( "disabled", true );
         $('#cancel').prop( "disabled", true );
         $('#next').prop( "disabled", false );
@@ -34,7 +38,8 @@ $( document ).ready(function() {
         removeScoringZone();
         enableMarkerCreation();
         if(selectedPhotoIndex === photos.length-1){
-            selectedPhotoIndex = 0;
+            alert ("Your score is: " + score);
+            initializeButtons();
         } else {
             selectedPhotoIndex+=1;
         }
@@ -82,7 +87,6 @@ function generateScoringZone(selectedPhotoIndex){
     let monument = new google.maps.LatLng(photos[selectedPhotoIndex].lat, photos[selectedPhotoIndex].lng);
     let radio = 25000;
     for(radio; radio <= 200000; radio+=50000){
-        console.log(radio)
         var circleOptions = {
             strokeColor: '#0000FF',
             strokeOpacity: 0.8,
@@ -103,6 +107,22 @@ function removeScoringZone() {
             circleArray[i].setMap(null);
         }
         circleArray.length = 0;
+    }
+}
+
+function calculateScore(marker, monument){
+    let distance = google.maps.geometry.spherical.computeDistanceBetween(marker.position, monument.position);
+
+    if(distance <= 25000){
+        return 100;
+    } else if(distance > 25000 && distance <=75000){
+        return 75;
+    } else if (distance > 75000 && distance <=125000){
+        return 50;
+    } else if (distance > 125000 && distance <=175000){
+        return 25;
+    } else {
+        return 0;
     }
 }
 
