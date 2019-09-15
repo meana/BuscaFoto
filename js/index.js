@@ -61,6 +61,7 @@ function enableMarkerCreation(){
             position: e.latLng,
             map: map
         });
+        markersArray.push(marker);
         google.maps.event.removeListener(createMarker);
     });
 }
