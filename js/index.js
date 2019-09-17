@@ -141,7 +141,7 @@ function createLine(marker, monument) {
         strokeColor: '#000000',
         strokeOpacity: 1.0,
         strokeWeight: 3
-    }
+    };
 
     poly = new google.maps.Polyline(polyOptions);
     poly.setMap(map);
@@ -162,6 +162,7 @@ function initializeSummary(){
 
 function showSummary(marker, monument){
     let distance = google.maps.geometry.spherical.computeDistanceBetween(marker.position, monument.position);
+
     $('#distance').text("Distancia: " + Math.round(distance)/1000 + " Km");
     $('#score').text("Puntuación obtenida: " + calculateScore(marker, monument));
     $('#globalScore').text("Puntuación Global: " + score);
