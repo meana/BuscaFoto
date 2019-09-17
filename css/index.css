@@ -2,3 +2,24 @@
     height:100%;
     width:100%;
 }
+
+.list-group-item-success {
+    color: #000000;
+    background-color: #00FF00;
+}
+
+.list-group-item-warning {
+    color: #000000;
+    background-color: #FFFF00;
+}
+
+.list-group-item-warning2 {
+    color: #000000;
+    background-color: #FF7F00;
+}
+
+.list-group-item-danger {
+    color: #000000;
+    background-color: #FF0000;
+}
+
