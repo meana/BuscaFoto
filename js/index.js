@@ -1,18 +1,17 @@
 let score = 0;
+let selectedPhotoIndex = 0;
 
 $( document ).ready(function() {
 
-    let selectedPhotoIndex = 0;
-
-    $('#photo').attr('src', photos[selectedPhotoIndex].imgRef);
-    $('#photoTitle').text(photos[selectedPhotoIndex].name);
-    $('#summary').text(selectedPhotoIndex+1 + '/' + photos.length);
-    initializeButtons();
+    inizialiceGame()
 
     $('#map_frame').click(function(){
-        $('#confirm').prop( "disabled", false );
-        $('#cancel').prop( "disabled", false );
-    })
+        //Enable buttons whether there are not markers
+        if(markersArray.length != 2) {
+            $('#confirm').prop( "disabled", false );
+            $('#cancel').prop( "disabled", false );
+        }
+    });
 
     $("#confirm").click(function(){
         //todo Join in the same function due to syc issues.
@@ -42,13 +41,23 @@ $( document ).ready(function() {
         enableMarkerCreation();
         initializeSummary();
         if(selectedPhotoIndex === photos.length-1){
-            initializeButtons();
+            $('#restart').prop("disbled", false);
+            $('#confirm').prop( "disabled", true );
+            $('#cancel').prop( "disabled", true );
+            $('#next').prop( "disabled", true );
         } else {
             selectedPhotoIndex+=1;
+            map.setCenter(new google.maps.LatLng(spain_geographical_center_lat, spain_geographical_center_lng));
         }
         $('#photo').attr('src', photos[selectedPhotoIndex].imgRef);
         $('#photoTitle').text(photos[selectedPhotoIndex].name);
         $('#summary').text(selectedPhotoIndex+1 + '/' + photos.length);
+    });
+
+    $("#restart").click(function(){
+        inizialiceGame();
+        initializeSummary();
+        $('#globalScore').text("Puntuación Global: ");
     });
 });
 
@@ -56,6 +65,7 @@ function initializeButtons(){
     $('#confirm').prop( "disabled", true );
     $('#cancel').prop( "disabled", true );
     $('#next').prop( "disabled", true );
+    $('#restart').prop("disbled", true);
 }
 
 function enableMarkerCreation(){
@@ -79,11 +89,31 @@ function removeMarker(){
 }
 
 function showMonumentLocation(selectedPhotoIndex){
+
+    let monumentInfo = "<div id=\"content\">" +
+        "<div id=\"siteNotice\">" +
+        "</div>" +
+        "<h1 id=\"firstHeading\" class=\"firstHeading\">" + photos[selectedPhotoIndex].name + "</h1>" +
+        "<div id=\"bodyContent\">" +
+        "<p>" + photos[selectedPhotoIndex].description + "</p>" +
+        "</div>" +
+        "</div>";
+
+    var infowindow = new google.maps.InfoWindow({
+        content: monumentInfo
+    });
+
     let monument = new google.maps.Marker({
         position: new google.maps.LatLng(photos[selectedPhotoIndex].lat, photos[selectedPhotoIndex].lng),
         icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-        map: map
+        map: map,
+        title: photos[selectedPhotoIndex].name
     });
+
+    monument.addListener('click', function() {
+        infowindow.open(map, monument);
+    });
+
     markersArray.push(monument)
 }
 
@@ -166,5 +196,14 @@ function showSummary(marker, monument){
     $('#distance').text("Distancia: " + Math.round(distance)/1000 + " Km");
     $('#score').text("Puntuación obtenida: " + calculateScore(marker, monument));
     $('#globalScore').text("Puntuación Global: " + score);
+}
+
+function inizialiceGame(){
+    selectedPhotoIndex = 0;
+    score = 0;
+    $('#photo').attr('src', photos[selectedPhotoIndex].imgRef);
+    $('#photoTitle').text(photos[selectedPhotoIndex].name);
+    $('#summary').text(selectedPhotoIndex+1 + '/' + photos.length);
+    initializeButtons();
 }
 
